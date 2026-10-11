@@ -206,7 +206,7 @@ npm test                  # pruebas internas (205 comandos)
 Los límites (Ⓛ) se consumen **por uso**; los owners (Ⓞ) tienen todo en ∞.
 
 ### ❏ ᴍᴇɴᴜ
-`.menu [categoría]` · `.allmenu` · `.ping` · `.roles` · `.categorias`
+`.menu [categoría]` · `.allmenu` (todo en **un solo mensaje**) · `.ping` · `.roles` · `.categorias`
 
 ### ❏ ɪɴғᴏ
 `.bot` · `.perfil` · `.grupo` · `.owner` · `.report <msg>` · `.apistatus` · `.uptime` · `.id` · `.afk [motivo]`
@@ -260,6 +260,41 @@ Los límites (Ⓛ) se consumen **por uso**; los owners (Ⓞ) tienen todo en ∞.
 
 ### ❏ ᴘᴏᴋᴇᴍᴏɴ
 `.pokedex <nombre|nº>` · `.atrapar` · `.equipo` · `.box` · `.pcinfo <n>` · `.pelear` · `.pccurar` · `.liberar <n>` · `.pctop` · `.pokealeatorio` · `.pokehelp`
+
+---
+
+## 🧾 Formato de los menús
+
+`.menu <categoría>` y `.allmenu` usan este formato:
+
+```
+୨୧ ❏ *ᴛᴏᴏʟs*
+
+┊ ✿ .ǫʀ <ᴛᴇxᴛᴏ>
+
+┊ ✿ .ᴄᴀʟᴄ (2+3)*4^2  Ⓛ
+
+┊ ✿ .ᴛʀᴀɴꜱʟᴀᴛᴇ ᴇɴ ʜᴏʟᴀ ᴍᴜɴᴅᴏ  Ⓛ
+
+┊ ✿ .ᴜᴜɪᴅ
+
+୨୧
+
+> bot base
+```
+
+Detalles útiles:
+
+- **`.allmenu` manda TODO en un solo mensaje** (los 205 comandos de las 18 categorías, ~5 400 caracteres).
+- La categoría se puede pedir en **español o inglés y con o sin tildes**:
+  `.menu juegos` ≡ `.menu games` · `.menu economía` ≡ `.menu economy` · `.menu herramientas` ≡ `.menu tools` ·
+  `.menu stickers` · `.menu descargas` · `.menu grupos` · `.menu imágenes` · `.menu anime` · `.menu ia`…
+- Los comandos se pueden escribir **en versalitas o normales**: `.menu` ≡ `.ᴍᴇɴᴜ`, `.ping` ≡ `.ᴘɪɴɢ`.
+- Las marcas al final de cada línea son las de la leyenda del menú: `Ⓟ` premium · `Ⓛ` consume límite ·
+  `Ⓞ` solo owners · `Ⓐ` solo admins · `Ⓖ` solo grupos.
+
+Los menús se generan en `src/core/menu.js` (`menuBlock()`, `commandLine()`), así que cualquier categoría nueva
+hereda el formato automáticamente.
 
 ---
 

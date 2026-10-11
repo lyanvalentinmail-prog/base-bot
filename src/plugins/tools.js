@@ -221,16 +221,13 @@ export default [
     usage: '.idiomas',
     limit: false,
     async run(m) {
-      return m.reply(
-        [
-          `🌐 *ɪᴅɪᴏᴍᴀs sᴏᴘᴏʀᴛᴀᴅᴏs*`,
-          `┊ ᴛʀᴀᴅᴜᴄɪʀ : cualquier código ISO (es, en, pt, fr, de, it, ja, ru, ar, zh-CN…)`,
-          `┊ ᴛᴛs : es · en · pt · fr · de · it · ja · ru · ar · zh-CN`,
-          ``,
-          `ᴇᴊᴇᴍᴘʟᴏ : .ᴛʀ ᴊᴀ ʙᴜᴇɴᴏs ᴅíᴀs`,
-          `ᴇᴊᴇᴍᴘʟᴏ : .ᴛᴛs es ʜᴏʟᴀ ᴀ ᴛᴏᴅᴏs`
-        ].join('\n')
-      )
+      const lineas = [
+        'ᴛʀᴀᴅᴜᴄɪʀ : ᴄᴜᴀʟǫᴜɪᴇʀ ᴄóᴅɪɢᴏ ɪsᴏ (ᴇs, ᴇɴ, ᴘᴛ, ꜰʀ, ᴅᴇ, ɪᴛ, ᴊᴀ, ʀᴜ, ᴀʀ, ᴢʜ-ᴄɴ…)',
+        'ᴛᴛs : ᴇs · ᴇɴ · ᴘᴛ · ꜰʀ · ᴅᴇ · ɪᴛ · ᴊᴀ · ʀᴜ · ᴀʀ · ᴢʜ-ᴄɴ',
+        '.ᴛʀ ᴊᴀ ʙᴜᴇɴᴏs ᴅíᴀs',
+        '.ᴛᴛs ᴇs ʜᴏʟᴀ ᴀ ᴛᴏᴅᴏs'
+      ]
+      return m.reply([ctx.menu.menuBlock('ɪᴅɪᴏᴍᴀs', lineas), '', ctx.config.bot.footer].join('\n'))
     }
   }
 ]

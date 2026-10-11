@@ -99,20 +99,16 @@ export default [
     usage: '.efectos',
     limit: false,
     async run(m, ctx) {
-      return m.reply(
-        [
-          `╭───「 ᴇꜰᴇᴄᴛᴏs ᴅᴇ ᴀᴜᴅɪᴏ 」`,
-          `│`,
-          `│ 🔊 ${ctx.prefix}ᴛᴛs <ᴛᴇxᴛᴏ> — texto a voz`,
-          `│ ⏪ ${ctx.prefix}ʀᴇᴠᴇʀsᴇ — audio al revés`,
-          `│ 🤖 ${ctx.prefix}ʀᴏʙᴏᴛ — voz robótica`,
-          `│ 🤪 ${ctx.prefix}ᴢᴜᴇɪʀᴀ — efecto divertido`,
-          `│ 🎚️ ${ctx.prefix}ʙᴀss [1-30] — más bajos`,
-          `│`,
-          `│ 💡 ᴛᴏᴅᴏs ᴛʀᴀʙᴀᴊᴀɴ ʀᴇsᴘᴏɴᴅɪᴇɴᴅᴏ ᴀ ᴜɴ ᴀᴜᴅɪᴏ ᴏ ᴠɪᴅᴇᴏ.`,
-          `╰───「 ${ctx.botName} 」`
-        ].join('\n')
-      )
+      const p = ctx.prefix
+      const lineas = [
+        `🔊 ${p}ᴛᴛs <ᴛᴇxᴛᴏ> — texto a voz`,
+        `⏪ ${p}ʀᴇᴠᴇʀsᴀ — audio al revés`,
+        `🤖 ${p}ʀᴏʙᴏᴛ — voz robótica`,
+        `🤪 ${p}ᴢᴜᴇɪʀᴀ — efecto divertido`,
+        `🎚️ ${p}ʙᴀss [1-30] — más bajos`,
+        `💡 ᴛᴏᴅᴏs sᴇ ᴜsᴀɴ ʀᴇsᴘᴏɴᴅɪᴇɴᴅᴏ ᴀ ᴜɴ ᴀᴜᴅɪᴏ ᴏ ᴠɪᴅᴇᴏ`
+      ]
+      return m.reply([ctx.menu.menuBlock('ᴇꜰᴇᴄᴛᴏs ᴅᴇ ᴀᴜᴅɪᴏ', lineas), '', ctx.config.bot.footer].join('\n'))
     }
   }
 ]

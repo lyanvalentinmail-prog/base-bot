@@ -1,8 +1,9 @@
 /**
  *  Categoría: ᴍᴇɴᴜ
  */
+import config from '../../config.js'
 import { smallCaps } from '../core/utils.js'
-import { MENU_CATEGORIES, CATEGORY_LABELS } from '../core/menu.js'
+import { CATEGORY_LABELS, menuBlock, commandLine, resolveCategory } from '../core/menu.js'
 
 export default [
   {
@@ -18,8 +19,10 @@ export default [
       if (query) {
         const text = ctx.buildCategoryMenu(m, query)
         if (text) return m.reply(text)
-        const cats = ctx.visibleCategories().map((c) => `┊ ✿ ${ctx.prefix}ᴍᴇɴᴜ ${CATEGORY_LABELS[c]}`).join('\n')
-        return m.reply(`⚠️ No encontré la categoría *${query}*\n\n${cats}`)
+        const cats = ctx.visibleCategories().map((c) => `${ctx.prefix}ᴍᴇɴᴜ ${CATEGORY_LABELS[c]}`)
+        return m.reply(
+          [`⚠️ ɴᴏ ᴇɴᴄᴏɴᴛʀᴇ́ ʟᴀ ᴄᴀᴛᴇɢᴏʀíᴀ *${smallCaps(query)}*`, '', menuBlock('ᴄᴀᴛᴇɢᴏʀɪᴀs', cats), '', config.bot.footer].join('\n')
+        )
       }
       return m.reply(ctx.buildMenu(m))
     }
@@ -28,15 +31,16 @@ export default [
     name: 'allmenu',
     alias: ['todosmenu', 'menutotal'],
     category: 'menu',
-    desc: 'Envía todos los comandos del bot',
+    desc: 'Envía TODOS los comandos en un solo mensaje',
     usage: '.allmenu',
     limit: false,
     async run(m, ctx) {
-      const parts = ctx.buildAllMenu(m)
+      const parts = ctx.buildAllMenu(m) // normalmente 1 sola parte
       for (const part of parts) {
         await m.send(part)
-        await m.wait(700)
+        if (parts.length > 1) await m.wait(700)
       }
+      ctx.log.cmd(`allmenu enviado en ${parts.length} mensaje(s) · ${parts.join('').length} caracteres`)
     }
   },
   {
@@ -85,8 +89,15 @@ export default [
     usage: '.categorias',
     limit: false,
     async run(m, ctx) {
-      const cats = ctx.visibleCategories().map((c) => `┊ ❏ ${smallCaps(c)} — ${CATEGORY_LABELS[c]}`).join('\n')
-      return m.reply(`╭───「 ᴄᴀᴛᴇɢᴏʀɪᴀs 」\n│\n${cats}\n│\n│ ᴜsᴀ ${ctx.prefix}ᴍᴇɴᴜ <ᴄᴀᴛᴇɢᴏʀɪᴀ>\n╰───「 ${ctx.botName} 」`)
+      const lines = []
+      for (const cat of ctx.visibleCategories()) {
+        const plugins = ctx.pluginList.filter((p) => p.category === cat && !p.hidden)
+        lines.push(`${CATEGORY_LABELS[cat]} — ${plugins.length} ᴄᴏᴍᴀɴᴅᴏs`)
+      }
+      lines.push(`ᴜsᴀ ${ctx.prefix}ᴍᴇɴᴜ <ᴄᴀᴛᴇɢᴏʀɪᴀ> ᴘᴀʀᴀ ᴠᴇʀʟᴀ ᴄᴏᴍᴘʟᴇᴛᴀ`)
+      return m.reply([menuBlock('ᴄᴀᴛᴇɢᴏʀɪᴀs', lines), '', config.bot.footer].join('\n'))
     }
   }
 ]
+
+export { commandLine, smallCaps }

@@ -50,12 +50,23 @@ const SMALL = {
   w: 'ᴡ', x: 'x', y: 'ʏ', z: 'ᴢ'
 }
 
+/** Inverso: ᴍᴇɴᴜ → menu (para que también funcione escribir los comandos en versalitas) */
+const SMALL_TO_ASCII = Object.fromEntries(Object.entries(SMALL).map(([k, v]) => [v, k]))
+
 /** Convierte texto a versalitas: hola → ʜᴏʟᴀ */
 export function smallCaps(text = '') {
   return String(text)
     .toLowerCase()
     .split('')
     .map((c) => SMALL[c] || c)
+    .join('')
+}
+
+/** Convierte versalitas de vuelta a texto normal: ʜᴏʟᴀ → hola */
+export function smallToAscii(text = '') {
+  return String(text)
+    .split('')
+    .map((c) => SMALL_TO_ASCII[c] || c)
     .join('')
 }
 

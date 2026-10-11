@@ -152,24 +152,16 @@ export default [
     async run(m, ctx) {
       const r = await ctx.api.json('/api/meta/endpoints', {}, { retries: 0 })
       const down = (r.ok ? r.data.endpoints : []).filter((e) => e.category === 'downloader')
-      return m.reply(
-        [
-          `╭───「 ᴅᴇsᴄᴀʀɢᴀs 」`,
-          `│`,
-          `│ ᴇsᴛᴀᴅᴏ ᴅᴇ ʟᴏs ᴇɴᴅᴘᴏɪɴᴛs :`,
-          ...(down.length
-            ? down.map((e) => `│ ┊ ${e.path} → ${e.runtime?.status === 'available' ? '✅ ᴏᴋ' : `⚠️ ${e.runtime?.missing?.join(', ') || e.runtime?.status}`}`)
-            : ['│ ┊ (no pude leer el catálogo de la API)']),
-          `│`,
-          `│ ᴘᴀʀᴀ ᴀᴄᴛɪᴠᴀʀʟᴏs ᴇɴ ʀᴇɴᴅᴇʀ :`,
-          `│ ┊ 1. ᴀɢʀᴇɢᴀ ᴜɴ ʙᴜɪʟᴅ ᴄᴏᴍᴍᴀɴᴅ :`,
-          `│ ┊    apt-get update && apt-get install -y python3 python3-pip && pip install yt-dlp`,
-          `│ ┊ 2. ᴠᴜᴇʟᴠᴇ ᴀ ᴅᴇsᴘʟᴇɢᴀʀ ʟᴀ ᴀᴘɪ`,
-          `│ ┊ 3. ᴘʀᴜᴇʙᴀ ᴏᴛʀᴀ ᴠᴇᴢ ᴇsᴛᴇ ᴄᴏᴍᴀɴᴅᴏ`,
-          `│`,
-          `╰───「 ${ctx.botName} 」`
-        ].join('\n')
-      )
+      const lineas = [
+        'ᴇsᴛᴀᴅᴏ ᴅᴇ ʟᴏs ᴇɴᴅᴘᴏɪɴᴛs ᴅᴇ ᴅᴇsᴄᴀʀɢᴀ :',
+        ...(down.length
+          ? down.map((e) => `${e.path} → ${e.runtime?.status === 'available' ? '✅ ᴏᴋ' : `⚠️ ${e.runtime?.missing?.join(', ') || e.runtime?.status}`}`)
+          : ['(no pude leer el catálogo de la API)']),
+        'ᴘᴀʀᴀ ᴀᴄᴛɪᴠᴀʀʟᴏs ᴇɴ ʀᴇɴᴅᴇʀ, ᴜsᴀ ᴇsᴛᴇ ʙᴜɪʟᴅ ᴄᴏᴍᴍᴀɴᴅ :',
+        'apt-get update && apt-get install -y python3 python3-pip && pip install yt-dlp',
+        'ʟᴜᴇɢᴏ ʀᴇᴅᴇsᴘʟɪᴇɢᴀ ʟᴀ ᴀᴘɪ ʏ ᴠᴜᴇʟᴠᴇ ᴀ ᴘʀᴏʙᴀʀ'
+      ]
+      return m.reply([ctx.menu.menuBlock('ᴅᴇsᴄᴀʀɢᴀs', lineas), '', ctx.config.bot.footer].join('\n'))
     }
   }
 ]

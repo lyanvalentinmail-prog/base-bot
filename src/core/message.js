@@ -9,7 +9,7 @@ import config from '../../config.js'
 import { resolveRole, ensureDailyLimit, remainingLimit, roleLabel } from './roles.js'
 import {
   bareJid, extractText, getContentType, getQuoted, getMentionedJids, getMediaType,
-  isGroupJid, jidToNumber, sameJid, sleep, extFromMime
+  isGroupJid, jidToNumber, sameJid, sleep, extFromMime, smallToAscii
 } from './utils.js'
 
 export async function groupMetadata(sock, jid, ctx) {
@@ -78,7 +78,8 @@ export async function buildMessage(sock, msg, ctx) {
   if (ctx.commandChars.some((p) => text.startsWith(p))) {
     usedPrefix = ctx.commandChars.find((p) => text.startsWith(p))
     const parts = text.slice(usedPrefix.length).trim().split(/\s+/)
-    command = (parts.shift() || '').toLowerCase()
+    // smallToAscii: así también funcionan los comandos en versalitas (.ᴍᴇɴᴜ ≡ .menu)
+    command = smallToAscii(parts.shift() || '').toLowerCase()
     args = parts
   }
 

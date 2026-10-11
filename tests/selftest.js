@@ -223,11 +223,21 @@ export async function runSelfTest(ctx) {
   const main = menu.mainMenu({ ctx, user: fakeM.user, role: 'premium', ping: 12 })
   results.push(['menú principal', main.includes('ESTADÍSTICAS') && main.includes('❏ ɪɴғᴏ'), ''])
   const cat = menu.categoryMenu({ ctx, category: 'tools' })
-  results.push(['menú de categoría', !!cat && cat.includes('ǫʀ'), ''])
+  results.push(['menú de categoría', !!cat && cat.includes('ᴛᴏᴏʟ') && cat.includes('ǫʀ'), ''])
+  results.push(['formato ୨୧ ❏ *…* + ┊ ✿', !!cat && cat.startsWith('୨୧ ❏ *') && cat.includes('\n┊ ✿ ') && cat.trimEnd().includes('୨୧'), ''])
+  const catSmall = menu.categoryMenu({ ctx, category: 'ᴛᴏᴏʟꜱ' })
+  results.push(['categoría escrita en versalitas', !!catSmall && catSmall.includes('ǫʀ'), ''])
+  const catEs = menu.categoryMenu({ ctx, category: 'juegos' })
+  results.push(['categoría en español (.menu juegos)', !!catEs && catEs.includes('ᴛᴛᴛ'), ''])
+  results.push(['categoría con tilde (.menu economía)', !!menu.categoryMenu({ ctx, category: 'economía' }), ''])
+  results.push(['categoría inexistente devuelve null', menu.resolveCategory('zzz') === null, ''])
   const all = menu.allMenu({ ctx })
-  results.push(['allmenu', Array.isArray(all) && all.length > 0, `${all.length} partes`])
+  const allText = all.join('\n')
+  results.push(['allmenu en 1 solo mensaje', all.length === 1, `${all.length} mensaje(s) · ${allText.length} caracteres`])
+  results.push(['allmenu trae las 18 categorías', menu.MENU_CATEGORIES.every((c) => allText.includes(menu.CATEGORY_LABELS[c])), ''])
+  results.push(['allmenu cabe en WhatsApp (<65k)', allText.length < 65000, `${allText.length} caracteres`])
   const rolesText = menu.rolesMenu({ ctx, role: 'owner' })
-  results.push(['menú de roles', rolesText.includes('ᴏᴡɴᴇʀ'), ''])
+  results.push(['menú de roles', rolesText.includes('ᴏᴡɴᴇʀ') && rolesText.startsWith('୨୧ ❏ *'), ''])
 
   // 3) tarjetas canvas
   const card = await canvas.card('welcome', { username: 'Tester', group: 'Grupo', members: 5 })
@@ -263,6 +273,19 @@ export async function runSelfTest(ctx) {
   await handler({ messages: [rawMessage('.calc 1+1')], type: 'notify' })
   results.push(['el comando consume límite', db.user(`${USER}@s.whatsapp.net`).limitUsed > limitBefore, `${limitBefore} → ${db.user(`${USER}@s.whatsapp.net`).limitUsed}`])
   results.push(['xp acumulada', db.user(`${USER}@s.whatsapp.net`).xp > 0, `xp = ${db.user(`${USER}@s.whatsapp.net`).xp}`])
+
+  // 6.5) .allmenu en un solo mensaje + comandos escritos en versalitas
+  sent.length = 0
+  await handler({ messages: [rawMessage(`${config.bot.prefix}allmenu`)], type: 'notify' })
+  results.push(['.allmenu envía 1 solo mensaje', sent.length === 1, `${sent.length} mensaje(s) · ${(sent[0]?.content?.text || sent[0]?.text || '').length} caracteres`])
+
+  sent.length = 0
+  await handler({ messages: [rawMessage(`${config.bot.prefix}ᴍᴇɴᴜ ᴛᴏᴏʟꜱ`)], type: 'notify' })
+  results.push(['.ᴍᴇɴᴜ en versalitas funciona', sent.length > 0 && /ᴛᴏᴏʟ|ǫʀ/.test(sent[0]?.content?.text || sent[0]?.text || ''), `${sent.length} respuesta(s)`])
+
+  sent.length = 0
+  await handler({ messages: [rawMessage(`${config.bot.prefix}ᴘɪɴɢ`)], type: 'notify' })
+  results.push(['.ᴘɪɴɢ en versalitas funciona', sent.length > 0, `${sent.length} respuesta(s)`])
 
   // 7) REGRESIÓN: en index.js el handler se crea ANTES de conectarse (ctx.sock = null).
   //    Antes fallaba con: "Cannot read properties of null (reading 'user')"

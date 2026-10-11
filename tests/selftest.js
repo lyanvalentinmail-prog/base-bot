@@ -264,6 +264,72 @@ export async function runSelfTest(ctx) {
   results.push(['el comando consume límite', db.user(`${USER}@s.whatsapp.net`).limitUsed > limitBefore, `${limitBefore} → ${db.user(`${USER}@s.whatsapp.net`).limitUsed}`])
   results.push(['xp acumulada', db.user(`${USER}@s.whatsapp.net`).xp > 0, `xp = ${db.user(`${USER}@s.whatsapp.net`).xp}`])
 
+  // 7) REGRESIÓN: en index.js el handler se crea ANTES de conectarse (ctx.sock = null).
+  //    Antes fallaba con: "Cannot read properties of null (reading 'user')"
+  {
+    const ctx2 = makeCtx()
+    const realSock = ctx2.sock
+    ctx2.sock = null // todavía no hay conexión
+    await loadPlugins(ctx2, { silent: true })
+    const h2 = createHandler(ctx2) // igual que index.js
+    ctx2.sock = realSock // ahora llega el socket (onSocket)
+
+    let okCreatedEarly = true
+    sent.length = 0
+    await h2({ messages: [rawMessage('.ping')], type: 'notify' }) // mensaje normal
+    okCreatedEarly = sent.length > 0
+
+    sent.length = 0
+    // mensaje del propio bot (fromMe) → aquí es donde reventaba el error
+    await h2({
+      messages: [
+        {
+          key: { remoteJid: GROUP, fromMe: true, participant: `${OWNER}@s.whatsapp.net`, id: 'FROM1' },
+          pushName: 'bot',
+          message: { conversation: '.ping' },
+          messageTimestamp: Math.floor(Date.now() / 1000)
+        }
+      ],
+      type: 'notify'
+    })
+    const okFromMe = sent.length > 0
+
+    // y sin socket todavía: debe avisar, no explotar
+    ctx2.sock = null
+    let okNoSocket = true
+    try {
+      await h2({ messages: [rawMessage('.ping')], type: 'notify' })
+    } catch {
+      okNoSocket = false
+    }
+
+    results.push(['handler creado antes de conectar (regresión)', okCreatedEarly && okFromMe && okNoSocket, `normal:${okCreatedEarly} fromMe:${okFromMe} sin-socket:${okNoSocket}`])
+  }
+
+  // 8) REGRESIÓN: reconexión → el handler debe usar el socket NUEVO, no el viejo
+  {
+    const ctx3 = makeCtx()
+    await loadPlugins(ctx3, { silent: true })
+    const h3 = createHandler(ctx3)
+    const oldSock = ctx3.sock
+    let oldUsed = 0
+    let newUsed = 0
+    const oldSend = oldSock.sendMessage
+    oldSock.sendMessage = async (...args) => {
+      oldUsed++
+      return oldSend(...args)
+    }
+    const newSock = fakeSock()
+    const newSend = newSock.sendMessage
+    newSock.sendMessage = async (...args) => {
+      newUsed++
+      return newSend(...args)
+    }
+    ctx3.sock = newSock // Baileys creó otro socket tras reconectar
+    await h3({ messages: [rawMessage('.ping')], type: 'notify' })
+    results.push(['tras reconectar usa el socket nuevo', newUsed > 0 && oldUsed === 0, `nuevo:${newUsed} viejo:${oldUsed}`])
+  }
+
   /* ── resumen ─────────────────────────────────────────────── */
   const failed = results.filter(([, pass]) => !pass)
   console.log('\n──────────── RESUMEN ────────────')

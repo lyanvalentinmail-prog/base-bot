@@ -171,7 +171,8 @@ export default [
     async onMessage(m, ctx) {
       if (!db.settings.chatbot) return
       if (m.isCommand || m.fromMe) return
-      if (m.isGroup && !m.mentions.includes(ctx.sock.user?.id?.split(':')[0] + '@s.whatsapp.net')) {
+      const botJid = `${String(m.sock?.user?.id || '').split(':')[0].split('@')[0]}@s.whatsapp.net`
+      if (m.isGroup && !m.mentions.includes(botJid)) {
         // en grupos solo responde si lo mencionan
         if (!m.text.toLowerCase().includes(ctx.botName.toLowerCase())) return
       }

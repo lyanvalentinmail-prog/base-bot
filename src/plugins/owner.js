@@ -321,7 +321,7 @@ export default [
     async run(m, ctx) {
       const buffer = (await m.downloadQuoted()) || (await m.download())
       if (!buffer) return m.reply('📷 ʀᴇsᴘᴏɴᴅᴇ ᴀ ᴜɴᴀ ɪᴍᴀɢᴇɴ ᴄᴏɴ .sᴇᴛᴘᴘ')
-      await ctx.sock.updateProfilePicture(ctx.sock.user.id, buffer)
+      await ctx.sock.updateProfilePicture(ctx.sock.user.id, buffer) // ctx.sock siempre es el socket vivo
       return m.reply('✅ ꜰᴏᴛᴏ ᴅᴇ ᴘᴇʀғɪʟ ᴀᴄᴛᴜᴀʟɪᴢᴀᴅᴀ')
     }
   },

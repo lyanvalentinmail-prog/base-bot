@@ -16,7 +16,13 @@ const GROUP_LINK = /(chat\.whatsapp\.com\/|wa\.me\/|whatsapp\.com\/channel)/i
 const spamWarning = new Map()
 
 export function createHandler(ctx) {
-  const { sock } = ctx
+  /**
+   * ⚠️ OJO: el socket se lee SIEMPRE desde ctx.sock, nunca se guarda en una variable.
+   *  · index.js crea el handler ANTES de conectar (ctx.sock todavía es null)
+   *  · al reconectar, Baileys crea un socket NUEVO y el anterior queda muerto
+   * Leyéndolo en cada mensaje, el bot siempre usa el socket vivo.
+   */
+  const sock = () => ctx.sock
 
   return async function onMessagesUpsert({ messages, type }) {
     if (type !== 'notify' && type !== 'append') return
@@ -35,14 +41,20 @@ export function createHandler(ctx) {
     if (!raw.message) return
     if (raw.key?.remoteJid === 'status@broadcast') return
 
+    const sockRef = sock()
+    if (!sockRef) {
+      log.warn('Llegó un mensaje pero todavía no hay conexión con WhatsApp; lo ignoro.')
+      return
+    }
+
     const isGroup = String(raw.key.remoteJid).endsWith('@g.us')
     const chat = raw.key.remoteJid
-    const sender = bareJid(raw.key.fromMe ? sock.user?.id : raw.key.participant || chat)
+    const sender = bareJid(raw.key.fromMe ? sockRef.user?.id : raw.key.participant || chat)
 
     /* ── antidelete: revocaciones (el típico «eliminar para todos») ── */
     const protocol = raw.message?.protocolMessage
     if (protocol?.type === 0 && protocol.key?.id) {
-      await resendDeleted(sock, chat, protocol.key.id, raw.key.participant || raw.key.remoteJid)
+      await resendDeleted(sockRef, chat, protocol.key.id, raw.key.participant || raw.key.remoteJid)
       return
     }
 
@@ -55,7 +67,7 @@ export function createHandler(ctx) {
       timestamp: raw.messageTimestamp
     })
 
-    const m = await buildMessage(sock, raw, ctx)
+    const m = await buildMessage(sockRef, raw, ctx)
     if (!m) return
 
     /* ── bloqueos básicos ────────────────────────────────── */
@@ -177,7 +189,7 @@ export function createHandler(ctx) {
     /* ── ejecutar ────────────────────────────────────────── */
     const started = Date.now()
     try {
-      if (db.settings.autoread) await sock.readMessages([m.key]).catch(() => {})
+      if (db.settings.autoread) await sockRef.readMessages([m.key]).catch(() => {})
       if (db.settings.autotype) await m.presence('composing')
       if (config.behavior.reactCommands) await m.react('✅')
 
@@ -218,7 +230,7 @@ export function createHandler(ctx) {
       g.warns[target] = 0
       db.markDirty()
       if (m.isBotAdmin) {
-        await sock.groupParticipantsUpdate(m.chat, [target], 'remove').catch(() => {})
+        await sock().groupParticipantsUpdate(m.chat, [target], 'remove').catch(() => {})
         return m.reply(`🚫 ${mentionTag(target)} ᴇxᴘᴜʟsᴀᴅᴏ ᴘᴏʀ 3 ᴀᴅᴠᴇʀᴛᴇɴᴄɪᴀs (${reason})`, { mentions: [target] })
       }
     }

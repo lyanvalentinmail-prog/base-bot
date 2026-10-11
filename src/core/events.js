@@ -55,10 +55,13 @@ export async function resendDeleted(sock, chat, messageId, byJid) {
 
 /** Bienvenida / despedida con tarjeta canvas */
 export function bindGroupEvents(sock, ctx) {
-  sock.ev.on('group-participants.update', async ({ id, participants, action }) => {
+  /** ⚠️ siempre el socket VIVO: al reconectar, Baileys crea uno nuevo */
+  const live = () => ctx.sock || sock
+
+  live().ev.on('group-participants.update', async ({ id, participants, action }) => {
     try {
       const group = db.group(id)
-      const meta = await sock.groupMetadata(id).catch(() => null)
+      const meta = await live().groupMetadata(id).catch(() => null)
       if (meta?.subject) group.name = meta.subject
       db.markDirty()
 
@@ -66,7 +69,7 @@ export function bindGroupEvents(sock, ctx) {
         const jid = bareJid(raw.id || raw)
         const name = getPushName(sock, jid)
         const members = meta?.participants?.length || 0
-        const { url, buffer } = await pfpBuffer(sock, jid)
+        const { url, buffer } = await pfpBuffer(live(), jid)
 
         if (action === 'add' && group.settings.welcome) {
           const card = await canvas.card('welcome', {
@@ -82,8 +85,8 @@ export function bindGroupEvents(sock, ctx) {
             `╭───「 ʙɪᴇɴᴠᴇɴɪᴅᴏ/a 」\n│ ${mentionTag(jid)}\n│ ᴀ ${meta?.subject || 'el grupo'} 🎉\n` +
             `│ sᴏᴍᴏs ${members} ᴍɪᴇᴍʙʀᴏs\n│ ᴇsᴄʀɪʙᴇ *${ctx.prefix}ᴍᴇɴᴜ* ᴘᴀʀᴀ ᴠᴇʀ ᴍɪs ᴄᴏᴍᴀɴᴅᴏs\n╰───「 ${ctx.botName} 」` +
             (config.group.welcomeText ? `\n\n${config.group.welcomeText}` : '')
-          if (card) await sock.sendMessage(id, { image: card.buffer, caption, mentions: [jid] })
-          else await sock.sendMessage(id, { text: caption, mentions: [jid] })
+          if (card) await live().sendMessage(id, { image: card.buffer, caption, mentions: [jid] })
+          else await live().sendMessage(id, { text: caption, mentions: [jid] })
         }
 
         if ((action === 'remove' || action === 'leave') && group.settings.goodbye) {
@@ -97,15 +100,15 @@ export function bindGroupEvents(sock, ctx) {
             footer: ctx.botName
           })
           const caption = `╭───「 ᴅᴇsᴘᴇᴅɪᴅᴀ 」\n│ ${mentionTag(jid)} sᴀʟɪᴏ́ ᴅᴇʟ ɢʀᴜᴘᴏ\n│ Qᴜᴇᴅᴀᴍᴏs ${members} ᴍɪᴇᴍʙʀᴏs\n╰───「 ${ctx.botName} 」`
-          if (card) await sock.sendMessage(id, { image: card.buffer, caption, mentions: [jid] })
-          else await sock.sendMessage(id, { text: caption, mentions: [jid] })
+          if (card) await live().sendMessage(id, { image: card.buffer, caption, mentions: [jid] })
+          else await live().sendMessage(id, { text: caption, mentions: [jid] })
         }
 
         if (action === 'promote') {
-          await sock.sendMessage(id, { text: `🎖️ ${mentionTag(jid)} ᴀʜᴏʀᴀ ᴇs ᴀᴅᴍɪɴ ᴅᴇʟ ɢʀᴜᴘᴏ`, mentions: [jid] }).catch(() => {})
+          await live().sendMessage(id, { text: `🎖️ ${mentionTag(jid)} ᴀʜᴏʀᴀ ᴇs ᴀᴅᴍɪɴ ᴅᴇʟ ɢʀᴜᴘᴏ`, mentions: [jid] }).catch(() => {})
         }
         if (action === 'demote') {
-          await sock.sendMessage(id, { text: `📉 ${mentionTag(jid)} ʏᴀ ɴᴏ ᴇs ᴀᴅᴍɪɴ`, mentions: [jid] }).catch(() => {})
+          await live().sendMessage(id, { text: `📉 ${mentionTag(jid)} ʏᴀ ɴᴏ ᴇs ᴀᴅᴍɪɴ`, mentions: [jid] }).catch(() => {})
         }
       }
     } catch (e) {
@@ -114,7 +117,7 @@ export function bindGroupEvents(sock, ctx) {
   })
 
   /* cambios de nombre/descripción del grupo */
-  sock.ev.on('groups.update', async (updates) => {
+  live().ev.on('groups.update', async (updates) => {
     for (const u of updates) {
       try {
         if (!u.id) continue
@@ -130,23 +133,23 @@ export function bindGroupEvents(sock, ctx) {
   })
 
   /* ── antidelete ─────────────────────────────────────────── */
-  sock.ev.on('messages.update', async (updates) => {
+  live().ev.on('messages.update', async (updates) => {
     for (const u of updates) {
       try {
         const revoked = u.update?.message === null
-        if (revoked && u.key) await resendDeleted(sock, u.key.remoteJid, u.key.id, u.key.participant || u.key.remoteJid)
+        if (revoked && u.key) await resendDeleted(live(), u.key.remoteJid, u.key.id, u.key.participant || u.key.remoteJid)
       } catch {
         /* ignora */
       }
     }
   })
 
-  sock.ev.on('messages.delete', async (item) => {
+  live().ev.on('messages.delete', async (item) => {
     try {
       if (item.keys) {
-        for (const k of item.keys) await resendDeleted(sock, k.remoteJid, k.id, k.participant || k.remoteJid)
+        for (const k of item.keys) await resendDeleted(live(), k.remoteJid, k.id, k.participant || k.remoteJid)
       } else if (item.key) {
-        await resendDeleted(sock, item.key.remoteJid, item.key.id, item.key.participant || item.key.remoteJid)
+        await resendDeleted(live(), item.key.remoteJid, item.key.id, item.key.participant || item.key.remoteJid)
       }
     } catch {
       /* ignora */
@@ -154,12 +157,12 @@ export function bindGroupEvents(sock, ctx) {
   })
 
   /* ── llamadas: rechazar y avisar ─────────────────────────── */
-  sock.ev.on('call', async (calls) => {
+  live().ev.on('call', async (calls) => {
     for (const call of calls) {
       try {
         if (call.status !== 'offer') continue
-        await sock.rejectCall(call.id, call.from)
-        await sock.sendMessage(call.from, {
+        await live().rejectCall(call.id, call.from)
+        await live().sendMessage(call.from, {
           text: `📵 ${smallCaps('No puedo atender llamadas, escríbeme mejor por mensaje')} 😊`
         })
       } catch (e) {

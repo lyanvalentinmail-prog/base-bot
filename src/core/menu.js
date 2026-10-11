@@ -101,21 +101,18 @@ export function commandMarks(plugin) {
 }
 
 /**
- * Bloque de menú con el formato del dueño:
+ * Bloque de menú con el formato del dueño (compacto, sin líneas en blanco):
  *
  *   ୨୧ ❏ *ᴛɪᴛᴜʟᴏ*
- *
  *   ┊ ✿ línea
- *
  *   ┊ ✿ línea
- *
  *   ୨୧
  */
 export function menuBlock(title, lines = [], { max = 0, more = 'ᴍás ᴄᴏᴍᴀɴᴅᴏs' } = {}) {
-  const out = [`୨୧ ❏ *${title}*`, '']
+  const out = [`୨୧ ❏ *${title}*`]
   const shown = max > 0 ? lines.slice(0, max) : lines
-  for (const line of shown) out.push(`┊ ✿ ${line}`, '')
-  if (max > 0 && lines.length > max) out.push(`┊ ✿ … ʏ ${lines.length - max} ${more}`, '')
+  for (const line of shown) out.push(`┊ ✿ ${line}`)
+  if (max > 0 && lines.length > max) out.push(`┊ ✿ … ʏ ${lines.length - max} ${more}`)
   out.push('୨୧')
   return out.join('\n')
 }
@@ -225,7 +222,7 @@ export function allMenu({ ctx }) {
   const parts = []
   let current = header
   for (const block of blocks) {
-    const candidate = `${current}\n\n${block}`
+    const candidate = `${current}\n${block}`
     if (candidate.length + 30 > MAX && current !== header) {
       parts.push(current)
       current = block

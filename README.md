@@ -269,19 +269,16 @@ Los límites (Ⓛ) se consumen **por uso**; los owners (Ⓞ) tienen todo en ∞.
 
 ```
 ୨୧ ❏ *ᴛᴏᴏʟs*
-
-┊ ✿ .ǫʀ <ᴛᴇxᴛᴏ>
-
+┊ ✿ .ǫʀ <ᴛᴇxᴛᴏ>  Ⓛ
 ┊ ✿ .ᴄᴀʟᴄ (2+3)*4^2  Ⓛ
-
 ┊ ✿ .ᴛʀᴀɴꜱʟᴀᴛᴇ ᴇɴ ʜᴏʟᴀ ᴍᴜɴᴅᴏ  Ⓛ
-
 ┊ ✿ .ᴜᴜɪᴅ
-
 ୨୧
 
 > bot base
 ```
+
+El bloque va **compacto**: sin líneas en blanco entre el nombre de la categoría y los comandos, ni entre comandos.
 
 Detalles útiles:
 

@@ -79,6 +79,24 @@ nano config.js      # bot.owners: ['5491112345678']
 
 > 💡 En Termux, `npm install` puede tardar unos minutos la primera vez (compila módulos nativos). Si aparece `--omit=optional`, el bot sigue funcionando: en ese caso las tarjetas las genera la API.
 
+### Actualizar el bot a la última versión
+
+```bash
+cd ~/---s-
+bash scripts/update.sh        # trae los cambios, reinstala y corre las pruebas
+```
+
+O a mano:
+
+```bash
+cd ~/---s-
+git pull origin arena/e8b64dd1-s   # o: git pull origin main
+npm install
+```
+
+> ⚠️ El comando del bot vive en la rama **`arena/e8b64dd1-s`**. Si clonaste y `npm start` da
+> «Cannot find module», casi seguro estás en `main`: haz `git checkout arena/e8b64dd1-s`.
+
 ### Mantener el bot vivo en Android
 
 ```bash

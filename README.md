@@ -46,8 +46,8 @@ Incluye **205 comandos** en las **18 categorías** del menú, sistema de **roles
 
 ```bash
 pkg update && pkg install -y git
-git clone https://github.com/lyanvalentinmail-prog/---s-.git
-cd ---s-
+git clone https://github.com/lyanvalentinmail-prog/base-bot.git
+cd base-bot
 bash scripts/termux-install.sh
 ```
 
@@ -62,8 +62,8 @@ pkg install -y nodejs git
 node -v          # debe decir v20.x o superior
 
 # 2) descargar el bot
-git clone https://github.com/lyanvalentinmail-prog/---s-.git
-cd ---s-
+git clone https://github.com/lyanvalentinmail-prog/base-bot.git
+cd base-bot
 
 # 3) dependencias
 npm install --no-audit --no-fund
@@ -82,17 +82,26 @@ nano config.js      # bot.owners: ['5491112345678']
 ### Actualizar el bot a la última versión
 
 ```bash
-cd ~/---s-
+cd ~/base-bot
 bash scripts/update.sh        # trae los cambios, reinstala y corre las pruebas
 ```
 
 O a mano:
 
 ```bash
-cd ~/---s-
+cd ~/base-bot
 git pull origin arena/e8b64dd1-s   # o: git pull origin main
 npm install
 ```
+
+> 🔁 **¿Clonaste cuando el repo se llamaba `---s-`?** No pasa nada (GitHub redirige), pero
+> conviene actualizar la dirección:
+> ```bash
+> cd ~/---s-                     # carpeta con el nombre viejo
+> git remote set-url origin https://github.com/lyanvalentinmail-prog/base-bot.git
+> git pull origin arena/e8b64dd1-s
+> ```
+> Y si querés renombrar la carpeta local: `mv ~/---s- ~/base-bot`
 
 > ⚠️ El comando del bot vive en la rama **`arena/e8b64dd1-s`**. Si clonaste y `npm start` da
 > «Cannot find module», casi seguro estás en `main`: haz `git checkout arena/e8b64dd1-s`.
@@ -114,8 +123,8 @@ También puedes usar **Termux:Boot** y un script en `~/.termux/boot/` para arran
 ## 💻 Instalación en PC (Linux / Windows / macOS)
 
 ```bash
-git clone https://github.com/lyanvalentinmail-prog/---s-.git
-cd ---s-
+git clone https://github.com/lyanvalentinmail-prog/base-bot.git
+cd base-bot
 npm install
 npm start
 ```

@@ -1,0 +1,15 @@
+# dependencias
+node_modules/
+
+# sesión de WhatsApp (NO subir nunca: contiene tus credenciales)
+data/session/
+data/database.json
+data/backup/
+data/last-qr.txt
+data/*.log
+
+# temporales
+tmp/
+*.log
+.DS_Store
+.env

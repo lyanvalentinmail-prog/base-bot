@@ -265,35 +265,35 @@ Los límites (Ⓛ) se consumen **por uso**; los owners (Ⓞ) tienen todo en ∞.
 
 ## 🧾 Formato de los menús
 
-`.menu <categoría>` y `.allmenu` usan este formato:
+`.menu`, `.menu <categoría>` y `.allmenu` listan el **comando puro**: sin parámetros, sin rangos y sin
+ejemplos inventados. Así el menú queda corto y siempre igual, aunque después cambies un comando por dentro.
 
 ```
 ୨୧ ❏ *ᴛᴏᴏʟs*
-┊ ✿ .ǫʀ <ᴛᴇxᴛᴏ>  Ⓛ
-┊ ✿ .ᴄᴀʟᴄ (2+3)*4^2  Ⓛ
-┊ ✿ .ᴛʀᴀɴꜱʟᴀᴛᴇ ᴇɴ ʜᴏʟᴀ ᴍᴜɴᴅᴏ  Ⓛ
+┊ ✿ .ʙᴀꜱᴇ64
+┊ ✿ .ᴄᴀʟᴄ  Ⓛ
+┊ ✿ .ᴛʀᴀɴꜱʟᴀᴛᴇ  Ⓛ
 ┊ ✿ .ᴜᴜɪᴅ
 ୨୧
 
 > bot base
 ```
 
-El bloque va **compacto**: sin líneas en blanco entre el nombre de la categoría y los comandos, ni entre comandos.
-
 Detalles útiles:
 
-- **`.allmenu` manda TODO en un solo mensaje** (los 205 comandos de las 18 categorías, ~5 400 caracteres).
+- **`.allmenu` manda TODO en un solo mensaje** (los 203 comandos de las 18 categorías, ~5 000 caracteres).
 - La categoría se puede pedir en **español o inglés y con o sin tildes**:
   `.menu juegos` ≡ `.menu games` · `.menu economía` ≡ `.menu economy` · `.menu herramientas` ≡ `.menu tools` ·
   `.menu stickers` · `.menu descargas` · `.menu grupos` · `.menu imágenes` · `.menu anime` · `.menu ia`…
 - Los comandos se pueden escribir **en versalitas o normales**: `.menu` ≡ `.ᴍᴇɴᴜ`, `.ping` ≡ `.ᴘɪɴɢ`.
 - Las marcas al final de cada línea son las de la leyenda del menú: `Ⓟ` premium · `Ⓛ` consume límite ·
   `Ⓞ` solo owners · `Ⓐ` solo admins · `Ⓖ` solo grupos.
+- Los parámetros que necesita cada comando **no se muestran en el menú**: quedan en `usage` dentro de su
+  plugin (`src/plugins/*.js`) y el bot te avisa en el chat cuando a un comando le falta un dato.
 
 Los menús se generan en `src/core/menu.js` (`menuBlock()`, `commandLine()`), así que cualquier categoría nueva
-hereda el formato automáticamente.
-
----
+hereda el formato automáticamente. Si querés volver a mostrar los parámetros, hay un interruptor:
+`commandLine(plugin, prefix, { hint: true })`.
 
 ## 🎭 Roles y límites diarios
 

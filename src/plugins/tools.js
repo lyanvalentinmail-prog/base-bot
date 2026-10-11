@@ -224,8 +224,8 @@ export default [
       const lineas = [
         'ᴛʀᴀᴅᴜᴄɪʀ : ᴄᴜᴀʟǫᴜɪᴇʀ ᴄóᴅɪɢᴏ ɪsᴏ (ᴇs, ᴇɴ, ᴘᴛ, ꜰʀ, ᴅᴇ, ɪᴛ, ᴊᴀ, ʀᴜ, ᴀʀ, ᴢʜ-ᴄɴ…)',
         'ᴛᴛs : ᴇs · ᴇɴ · ᴘᴛ · ꜰʀ · ᴅᴇ · ɪᴛ · ᴊᴀ · ʀᴜ · ᴀʀ · ᴢʜ-ᴄɴ',
-        '.ᴛʀ ᴊᴀ ʙᴜᴇɴᴏs ᴅíᴀs',
-        '.ᴛᴛs ᴇs ʜᴏʟᴀ ᴀ ᴛᴏᴅᴏs'
+        '.ᴛʀ',
+        '.ᴛᴛs'
       ]
       return m.reply([ctx.menu.menuBlock('ɪᴅɪᴏᴍᴀs', lineas), '', ctx.config.bot.footer].join('\n'))
     }

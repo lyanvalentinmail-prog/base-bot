@@ -101,11 +101,11 @@ export default [
     async run(m, ctx) {
       const p = ctx.prefix
       const lineas = [
-        `🔊 ${p}ᴛᴛs <ᴛᴇxᴛᴏ> — texto a voz`,
-        `⏪ ${p}ʀᴇᴠᴇʀsᴀ — audio al revés`,
-        `🤖 ${p}ʀᴏʙᴏᴛ — voz robótica`,
-        `🤪 ${p}ᴢᴜᴇɪʀᴀ — efecto divertido`,
-        `🎚️ ${p}ʙᴀss [1-30] — más bajos`,
+        `🔊 ${p}ᴛᴛs`,
+        `⏪ ${p}ʀᴇᴠᴇʀsᴀ`,
+        `🤖 ${p}ʀᴏʙᴏᴛ`,
+        `🤪 ${p}ᴢᴜᴇɪʀᴀ`,
+        `🎚️ ${p}ʙᴀss`,
         `💡 ᴛᴏᴅᴏs sᴇ ᴜsᴀɴ ʀᴇsᴘᴏɴᴅɪᴇɴᴅᴏ ᴀ ᴜɴ ᴀᴜᴅɪᴏ ᴏ ᴠɪᴅᴇᴏ`
       ]
       return m.reply([ctx.menu.menuBlock('ᴇꜰᴇᴄᴛᴏs ᴅᴇ ᴀᴜᴅɪᴏ', lineas), '', ctx.config.bot.footer].join('\n'))

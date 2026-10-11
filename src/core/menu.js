@@ -4,12 +4,11 @@
  *  Formato (el del dueño):
  *
  *    ୨୧ ❏ *ᴄᴀᴛᴇɢᴏʀɪᴀ*
- *
- *    ┊ ✿ .ᴄᴏᴍᴀɴᴅᴏ <ᴀʀɢᴜᴍᴇɴᴛᴏ>
- *
- *    ┊ ✿ .ᴄᴏᴍᴀɴᴅᴏ <ᴀʀɢᴜᴍᴇɴᴛᴏ>
- *
+ *    ┊ ✿ .ᴄᴏᴍᴀɴᴅᴏ
+ *    ┊ ✿ .ᴄᴏᴍᴀɴᴅᴏ
  *    ୨୧
+ *
+ *  Los comandos van SIEMPRE en limpio, sin parámetros ni ejemplos.
  */
 import config from '../../config.js'
 import { smallCaps, smallToAscii, formatNumber, clockString } from './utils.js'
@@ -131,10 +130,17 @@ export function argHint(plugin) {
   return ` ${clean.length > 42 ? `${clean.slice(0, 41)}…` : clean}`
 }
 
-/** Línea lista para el menú: ".ᴍᴇɴᴜ [ᴄᴀᴛᴇɢᴏʀíᴀ]  Ⓛ" */
-export function commandLine(plugin, prefix) {
+/**
+ * Línea lista para el menú: ".ᴍᴇɴᴜ  Ⓛ"
+ *
+ * El menú muestra el comando PURO (sin parámetros, rangos ni ejemplos).
+ * `argHint()` sigue disponible por si algún día se quiere mostrar el uso
+ * en otro sitio: `commandLine(plugin, prefix, { hint: true })`.
+ */
+export function commandLine(plugin, prefix, { hint = false } = {}) {
   const marks = commandMarks(plugin)
-  return `${prefix}${smallCaps(plugin.name)}${argHint(plugin)}${marks ? `  ${marks}` : ''}`
+  const args = hint ? argHint(plugin) : ''
+  return `${prefix}${smallCaps(plugin.name)}${args}${marks ? `  ${marks}` : ''}`
 }
 
 /** Menú principal — plantilla original del dueño */
@@ -166,11 +172,11 @@ export function mainMenu({ ctx, user, role, ping }) {
     `୨୧`,
     ``,
     `୨୧ ❏ *ᴍᴇɴᴜ*`,
-    `┊ ✿ ${prefix}ᴍᴇɴᴜ — ᴇsᴛᴇ ᴍᴇɴᴜ́`,
-    `┊ ✿ ${prefix}ᴀʟʟᴍᴇɴᴜ — ᴛᴏᴅᴏ ᴇɴ ᴜɴ ᴍᴇɴsᴀᴊᴇ`,
-    `┊ ✿ ${prefix}ᴍᴇɴᴜ <ᴄᴀᴛᴇɢᴏʀɪᴀ> — sᴏʟᴏ ᴜɴᴀ ᴄᴀᴛᴇɢᴏʀɪᴀ`,
-    `┊ ✿ ${prefix}ᴘɪɴɢ — ᴠᴇʟᴏᴄɪᴅᴀᴅ`,
-    `┊ ✿ ${prefix}ʀᴏʟᴇs — ʀᴏʟᴇs ʏ ʟíᴍɪᴛᴇs`,
+    `┊ ✿ ${prefix}ᴍᴇɴᴜ`,
+    `┊ ✿ ${prefix}ᴀʟʟᴍᴇɴᴜ`,
+    `┊ ✿ ${prefix}ʀᴏʟᴇs`,
+    `┊ ✿ ${prefix}ᴄᴀᴛᴇɢᴏʀíᴀꜱ`,
+    `┊ ✿ ${prefix}ᴘɪɴɢ`,
     `୨୧`,
     ``
   ]
@@ -214,8 +220,7 @@ export function allMenu({ ctx }) {
   }
 
   const header = menuBlock('ᴀʟʟᴍᴇɴᴜ', [
-    `${total} ᴄᴏᴍᴀɴᴅᴏs · ${blocks.length} ᴄᴀᴛᴇɢᴏʀíᴀs`,
-    `${ctx.prefix}ᴍᴇɴᴜ <ᴄᴀᴛᴇɢᴏʀɪᴀ> ᴘᴀʀᴀ ᴠᴇʀ sᴏʟᴏ ᴜɴᴀ`
+    `${total} ᴄᴏᴍᴀɴᴅᴏs · ${blocks.length} ᴄᴀᴛᴇɢᴏʀíᴀs`
   ])
 
   const MAX = 60000

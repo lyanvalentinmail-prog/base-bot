@@ -228,6 +228,7 @@ export async function runSelfTest(ctx) {
   const catLines = (cat || '').split('\n')
   results.push(['sin líneas en blanco dentro del bloque', !catLines.slice(0, -3).some((l, i) => l === '' && i > 0), catLines.filter((l) => l === '').length + ' líneas vacías (solo antes del footer)'])
   results.push(['1ª línea tras la categoría = comando', (catLines[1] || '').startsWith('┊ ✿ '), catLines[1] || ''])
+  const catCmds = catLines.filter((l) => l.startsWith('┊ ✿ .'))
   const catSmall = menu.categoryMenu({ ctx, category: 'ᴛᴏᴏʟꜱ' })
   results.push(['categoría escrita en versalitas', !!catSmall && catSmall.includes('ǫʀ'), ''])
   const catEs = menu.categoryMenu({ ctx, category: 'juegos' })
@@ -239,6 +240,9 @@ export async function runSelfTest(ctx) {
   results.push(['allmenu en 1 solo mensaje', all.length === 1, `${all.length} mensaje(s) · ${allText.length} caracteres`])
   results.push(['allmenu trae las 18 categorías', menu.MENU_CATEGORIES.every((c) => allText.includes(menu.CATEGORY_LABELS[c])), ''])
   results.push(['allmenu cabe en WhatsApp (<65k)', allText.length < 65000, `${allText.length} caracteres`])
+  const allCmds = allText.split('\n').filter((l) => l.startsWith('┊ ✿ .'))
+  results.push(['allmenu sin parámetros', !allCmds.some((l) => /[<>\[\]@]|—/.test(l)), `${allCmds.length} comandos`])
+  results.push(['.menu <cat> sin parámetros', catCmds.length > 0 && !catCmds.some((l) => /[<>\[\]@]|—/.test(l)), `${catCmds.length} comandos · ej: ${catCmds[0]}`])
   const rolesText = menu.rolesMenu({ ctx, role: 'owner' })
   results.push(['menú de roles', rolesText.includes('ᴏᴡɴᴇʀ') && rolesText.startsWith('୨୧ ❏ *'), ''])
 
@@ -289,6 +293,26 @@ export async function runSelfTest(ctx) {
   sent.length = 0
   await handler({ messages: [rawMessage(`${config.bot.prefix}ᴘɪɴɢ`)], type: 'notify' })
   results.push(['.ᴘɪɴɢ en versalitas funciona', sent.length > 0, `${sent.length} respuesta(s)`])
+
+  // 6.6) los menús muestran el comando PURO (sin parámetros, rangos ni ejemplos)
+  const PARAM = /[<>\[\]@]|—/
+  const replyTo = async (line, urls) => {
+    sent.length = 0
+    await handler({ messages: [rawMessage(`${config.bot.prefix}${line}`, urls)], type: 'notify' })
+    return sent.map((s) => s.content?.text || s.text || '').join('\n')
+  }
+  const pureLines = (text) => text.split('\n').filter((l) => l.startsWith('┊ ✿ .'))
+  const iaCmds = pureLines(await replyTo('menu ia'))
+  results.push(['.menu ia sin parámetros', iaCmds.length > 0 && !iaCmds.some((l) => PARAM.test(l)), iaCmds.slice(0, 3).join(' · ') || 'sin comandos'])
+  const imgCmds = pureLines(await replyTo('menu imagenes'))
+  results.push(['.menu imagenes sin parámetros (.blur)', imgCmds.length > 0 && !imgCmds.some((l) => PARAM.test(l)), imgCmds.slice(0, 3).join(' · ') || 'sin comandos'])
+  const juegosCmds = pureLines(await replyTo('juegos'))
+  results.push(['.juegos sin parámetros', juegosCmds.length > 0 && !juegosCmds.some((l) => PARAM.test(l)), juegosCmds.slice(0, 3).join(' · ') || 'sin comandos'])
+  const panelCmds = pureLines(await replyTo('panel', { jid: GROUP, sender: config.bot.owners[0] }))
+  results.push(['.panel sin parámetros', panelCmds.length > 0 && !panelCmds.some((l) => PARAM.test(l)), panelCmds.slice(0, 2).join(' · ') || 'sin comandos'])
+  const mainPure = pureLines(main)
+  results.push(['menú principal sin parámetros', mainPure.length >= 5 && !mainPure.some((l) => PARAM.test(l)), mainPure.join(' · ')])
+  results.push(['allmenu solo comando + marcas', allCmds.length > 100 && allCmds.every((l) => /^┊ ✿ \.\S+(  [ⓅⓁⓄⒶⒼ ]+)?$/.test(l)), `${allCmds.length} comandos · ej: ${allCmds[0]}`])
 
   // 7) REGRESIÓN: en index.js el handler se crea ANTES de conectarse (ctx.sock = null).
   //    Antes fallaba con: "Cannot read properties of null (reading 'user')"

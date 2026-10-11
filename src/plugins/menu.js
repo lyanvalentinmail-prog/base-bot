@@ -19,7 +19,7 @@ export default [
       if (query) {
         const text = ctx.buildCategoryMenu(m, query)
         if (text) return m.reply(text)
-        const cats = ctx.visibleCategories().map((c) => `${ctx.prefix}ᴍᴇɴᴜ ${CATEGORY_LABELS[c]}`)
+        const cats = ctx.visibleCategories().map((c) => CATEGORY_LABELS[c])
         return m.reply(
           [`⚠️ ɴᴏ ᴇɴᴄᴏɴᴛʀᴇ́ ʟᴀ ᴄᴀᴛᴇɢᴏʀíᴀ *${smallCaps(query)}*`, '', menuBlock('ᴄᴀᴛᴇɢᴏʀɪᴀs', cats), '', config.bot.footer].join('\n')
         )
@@ -94,7 +94,7 @@ export default [
         const plugins = ctx.pluginList.filter((p) => p.category === cat && !p.hidden)
         lines.push(`${CATEGORY_LABELS[cat]} — ${plugins.length} ᴄᴏᴍᴀɴᴅᴏs`)
       }
-      lines.push(`ᴜsᴀ ${ctx.prefix}ᴍᴇɴᴜ <ᴄᴀᴛᴇɢᴏʀɪᴀ> ᴘᴀʀᴀ ᴠᴇʀʟᴀ ᴄᴏᴍᴘʟᴇᴛᴀ`)
+      lines.push(`ᴇsᴄʀɪʙᴇ ${ctx.prefix}ᴍᴇɴᴜ ᴄᴏɴ ᴇʟ ɴᴏᴍʙʀᴇ ᴅᴇ ᴜɴᴀ ᴄᴀᴛᴇɢᴏʀíᴀ ᴘᴀʀᴀ ᴠᴇʀʟᴀ ᴄᴏᴍᴘʟᴇᴛᴀ`)
       return m.reply([menuBlock('ᴄᴀᴛᴇɢᴏʀɪᴀs', lines), '', config.bot.footer].join('\n'))
     }
   }

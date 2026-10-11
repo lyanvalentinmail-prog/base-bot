@@ -1,0 +1,34 @@
+{
+  "name": "bot-base-whatsapp",
+  "version": "1.0.0",
+  "description": "Bot de WhatsApp con Baileys (pairing code + QR), listo para Termux, conectado a la API SiputZX",
+  "type": "module",
+  "main": "index.js",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start": "node index.js",
+    "qr": "node index.js --qr",
+    "pair": "node index.js --pair",
+    "test": "node tests/selftest.js",
+    "canvas": "node scripts/make-canvas.js"
+  },
+  "keywords": [
+    "whatsapp",
+    "baileys",
+    "bot",
+    "termux",
+    "pairing-code",
+    "siputzx"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "@whiskeysockets/baileys": "^6.7.18",
+    "pino": "^9.5.0",
+    "qrcode-terminal": "^0.12.0"
+  },
+  "optionalDependencies": {
+    "@napi-rs/canvas": "^1.0.11"
+  }
+}
